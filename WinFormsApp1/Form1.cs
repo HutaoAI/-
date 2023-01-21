@@ -1,4 +1,3 @@
-using ConnectHKCamera;
 
 
 namespace WinFormsApp1
@@ -12,8 +11,6 @@ namespace WinFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            HKCamera hKCamera = new HKCamera();
-            bool b  = hKCamera.ConnectCamera("");
             
         }
     }

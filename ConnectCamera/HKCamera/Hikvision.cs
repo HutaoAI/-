@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using MvCamCtrl.NET;
+﻿using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Net;
 using System.Windows;
 using System.Drawing.Imaging;
+using MvCamCtrl.NET;
 
-namespace ConnectHKCam
+namespace ConnectCamera.HKCamera
 {
     [Serializable]
     /// <summary>
@@ -28,9 +25,9 @@ namespace ConnectHKCam
         private MyCamera.MVCC_INTVALUE stParam;//用于接收特定的参数
 
         //为读取、保存图像创建的数组
-        UInt32 m_nBufSizeForDriver = 25 * 1024 * 1024;
+        uint m_nBufSizeForDriver = 25 * 1024 * 1024;
         byte[] m_pBufForDriver = new byte[25 * 1024 * 1024];
-        UInt32 m_nBufSizeForSaveImage = 25 * 1024 * 1024 * 3 + 3000;
+        uint m_nBufSizeForSaveImage = 25 * 1024 * 1024 * 3 + 3000;
         byte[] m_pBufForSaveImage = new byte[25 * 1024 * 1024 * 3 + 3000];
         /// <summary>
         /// 相机是否连接成功
@@ -52,16 +49,18 @@ namespace ConnectHKCam
         /// </summary>
         public List<string> CameraId_list = new List<string>();
 
+
         #region 获取在线相机ID列表 方法
         public void DeviceListAcq()
         {
             int nRet;
             /*创建设备列表*/
-            System.GC.Collect();
+            GC.Collect();
             CameraId_list.Clear();
             nRet = MyCamera.MV_CC_EnumDevices_NET(MyCamera.MV_GIGE_DEVICE | MyCamera.MV_USB_DEVICE, ref deviceList);
             if (0 != nRet)
             {
+
                 return;
             }
 
@@ -82,16 +81,18 @@ namespace ConnectHKCam
                         CameraId_list.Add(gigeInfo.chSerialNumber);
                     }
 
-                    if (gigeInfo.chUserDefinedName != "")
-                    {
-                        CameraId_list.Add("GigE: " + gigeInfo.chUserDefinedName + " (" + gigeInfo.chSerialNumber + ")");
-                        //CameraId_list.Add(gigeInfo.chSerialNumber);
-                    }
-                    else
-                    {
-                        CameraId_list.Add("GigE: " + gigeInfo.chManufacturerName + " " + gigeInfo.chModelName + " (" + gigeInfo.chSerialNumber + ")");
-                        //CameraId_list.Add(gigeInfo.chSerialNumber);
-                    }
+
+
+                    //if (gigeInfo.chUserDefinedName != "")
+                    //{
+                    //    ////CameraId_list.Add("GigE: " + gigeInfo.chUserDefinedName + " (" + gigeInfo.chSerialNumber + ")");
+                    //    CameraId_list.Add(gigeInfo.chSerialNumber);
+                    //}
+                    //else
+                    //{
+                    //    ////CameraId_list.Add("GigE: " + gigeInfo.chManufacturerName + " " + gigeInfo.chModelName + " (" + gigeInfo.chSerialNumber + ")");
+                    //    CameraId_list.Add(gigeInfo.chSerialNumber);
+                    //}
 
                 }
                 else if (device.nTLayerType == MyCamera.MV_USB_DEVICE)
@@ -122,18 +123,18 @@ namespace ConnectHKCam
                 MyCamera.MV_GIGE_DEVICE_INFO gigeInfo = (MyCamera.MV_GIGE_DEVICE_INFO)Marshal.PtrToStructure(buffer, typeof(MyCamera.MV_GIGE_DEVICE_INFO));
                 IPAddress cameraIPAddress;
                 string tempStr = "";
-                if (IP.Trim().Equals("") || !(IPAddress.TryParse(IP, out cameraIPAddress)))
+                if (IP.Trim().Equals("") || !IPAddress.TryParse(IP, out cameraIPAddress))
                 {
                     //当前网卡的IP地址
-                    UInt32 nNetIp1 = (gigeInfo.nNetExport & 0xFF000000) >> 24;
-                    UInt32 nNetIp2 = (gigeInfo.nNetExport & 0x00FF0000) >> 16;
-                    UInt32 nNetIp3 = (gigeInfo.nNetExport & 0x0000FF00) >> 8;
-                    UInt32 nNetIp4 = (gigeInfo.nNetExport & 0x000000FF);
+                    uint nNetIp1 = (gigeInfo.nNetExport & 0xFF000000) >> 24;
+                    uint nNetIp2 = (gigeInfo.nNetExport & 0x00FF0000) >> 16;
+                    uint nNetIp3 = (gigeInfo.nNetExport & 0x0000FF00) >> 8;
+                    uint nNetIp4 = gigeInfo.nNetExport & 0x000000FF;
                     //根据网卡IP设定相机IP，如果网卡ip第四位小于252，则相机ip第四位+1，否则相机IP第四位-1
-                    UInt32 cameraIp1 = nNetIp1;
-                    UInt32 cameraIp2 = nNetIp2;
-                    UInt32 cameraIp3 = nNetIp3;
-                    UInt32 cameraIp4 = nNetIp4;
+                    uint cameraIp1 = nNetIp1;
+                    uint cameraIp2 = nNetIp2;
+                    uint cameraIp3 = nNetIp3;
+                    uint cameraIp4 = nNetIp4;
                     if (nNetIp4 < 252)
                     {
                         cameraIp4++;
@@ -154,7 +155,7 @@ namespace ConnectHKCam
                 uint maskIp1 = (gigeInfo.nCurrentSubNetMask & 0xFF000000) >> 24;
                 uint maskIp2 = (gigeInfo.nCurrentSubNetMask & 0x00FF0000) >> 16;
                 uint maskIp3 = (gigeInfo.nCurrentSubNetMask & 0x0000FF00) >> 8;
-                uint maskIp4 = (gigeInfo.nCurrentSubNetMask & 0x000000FF);
+                uint maskIp4 = gigeInfo.nCurrentSubNetMask & 0x000000FF;
                 IPAddress subMaskAddress;
                 tempStr = maskIp1 + "." + maskIp2 + "." + maskIp3 + "." + maskIp4;
                 IPAddress.TryParse(tempStr, out subMaskAddress);
@@ -163,13 +164,13 @@ namespace ConnectHKCam
                 uint gateIp1 = (gigeInfo.nDefultGateWay & 0xFF000000) >> 24;
                 uint gateIp2 = (gigeInfo.nDefultGateWay & 0x00FF0000) >> 16;
                 uint gateIp3 = (gigeInfo.nDefultGateWay & 0x0000FF00) >> 8;
-                uint gateIp4 = (gigeInfo.nDefultGateWay & 0x000000FF);
+                uint gateIp4 = gigeInfo.nDefultGateWay & 0x000000FF;
                 IPAddress gateAddress;
                 tempStr = gateIp1 + "." + gateIp2 + "." + gateIp3 + "." + gateIp4;
                 IPAddress.TryParse(tempStr, out gateAddress);
                 long gateIP = IPAddress.NetworkToHostOrder(gateAddress.Address);
 
-                int temp = myCamera.MV_GIGE_ForceIpEx_NET((UInt32)(cameraIP >> 32), (UInt32)(maskIP >> 32), (UInt32)(gateIP >> 32));//执行更改相机IP的命令
+                int temp = myCamera.MV_GIGE_ForceIpEx_NET((uint)(cameraIP >> 32), (uint)(maskIP >> 32), (uint)(gateIP >> 32));//执行更改相机IP的命令
                 if (temp == 0)
                     //强制IP成功
                     return 0;
@@ -186,7 +187,7 @@ namespace ConnectHKCam
 
         public int connectCamera(string id)//连接相机，返回-1为失败，0为成功
         {
-            this.seriesStr = id;
+            seriesStr = id;
             string m_SerialNumber = "";//接收设备返回的序列号
             int temp;//接收命令执行结果
             myCamera = new MyCamera();
@@ -230,6 +231,7 @@ namespace ConnectHKCam
                         }
                     }
                 }
+
 
                 //更改IP后需要重新刷新设备列表，否则打开相机时会报错
                 temp = MyCamera.MV_CC_EnumDevices_NET(MyCamera.MV_GIGE_DEVICE | MyCamera.MV_USB_DEVICE, ref deviceList);//更新设备列表
@@ -326,9 +328,9 @@ namespace ConnectHKCam
                 //    return;
                 //}
             }
-            catch (System.Exception)
+            catch (Exception)
             {
-                
+
             }
 
         }
@@ -373,10 +375,10 @@ namespace ConnectHKCam
                 return -1;
             return 0;
         }
-        
+
         public Bitmap ReadImage()
         {
-            UInt32 nPayloadSize = 0;
+            uint nPayloadSize = 0;
             int temp = myCamera.MV_CC_GetIntValue_NET("PayloadSize", ref stParam);
 
             if (MyCamera.MV_OK != temp)
@@ -392,8 +394,8 @@ namespace ConnectHKCam
             {
                 return null;
             }
-           
-            bmp = new Bitmap(stFrameInfo.nWidth, stFrameInfo.nHeight, stFrameInfo.nWidth, System.Drawing.Imaging.PixelFormat.Format8bppIndexed, pData);
+
+            bmp = new Bitmap(stFrameInfo.nWidth, stFrameInfo.nHeight, stFrameInfo.nWidth, PixelFormat.Format8bppIndexed, pData);
             ColorPalette cp = bmp.Palette;
             for (int i = 0; i < 256; i++)
             {
@@ -402,7 +404,7 @@ namespace ConnectHKCam
             bmp.Palette = cp;
 
             MemoryStream ms = new MemoryStream();
-            bmp.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            bmp.Save(ms, ImageFormat.Jpeg);
             byte[] buff = ms.ToArray();
             //File.WriteAllBytes(@"D:\Image\2.JPG", buff);
 
@@ -464,7 +466,7 @@ namespace ConnectHKCam
 
         }
         //4.判断是否为黑白图像
-        private Boolean IsMonoData(MyCamera.MvGvspPixelType enGvspPixelType)
+        private bool IsMonoData(MyCamera.MvGvspPixelType enGvspPixelType)
         {
             switch (enGvspPixelType)
             {
@@ -491,20 +493,32 @@ namespace ConnectHKCam
         }
 
 
-        //public void ExcuteDemo()
+        public void ExcuteDemo()
+        {
+            Hikvision camera = new Hikvision();//创建相机对象并实例化
+            camera.connectCamera("123456");//连接相机，传入相机序列号123456
+            camera.startCamera();//开启相机采集
+            camera.setTriggerMode(1);
+            camera.setTriggerSource(7);
+            camera.setExposureTime(10000);//设置曝光时间为10ms
+
+            camera.softTrigger();//发送软触发采集图像
+            //HImage image = camera.readImage();//获取采集到且转换后的图像
+            camera.stopCamera();//停止相机采集
+            camera.closeCamera();//关闭相机
+
+        }
+
+        //public  bool StartLive()
         //{
-        //    Hikvision camera = new Hikvision();//创建相机对象并实例化
-        //    camera.connectCamera("123456");//连接相机，传入相机序列号123456
-        //    camera.startCamera();//开启相机采集
-        //    camera.setTriggerMode(1);
-        //    camera.setTriggerSource(7);
-        //    camera.setExposureTime(10000);//设置曝光时间为10ms
+        //    if (!bl_CamOpen) return false;
+        //    return myCamera.SetEnumValue("TriggerMode", 0) == MyCamera.MV_OK;
+        //}
 
-        //    camera.softTrigger();//发送软触发采集图像
-        //    //HImage image = camera.readImage();//获取采集到且转换后的图像
-        //    camera.stopCamera();//停止相机采集
-        //    camera.closeCamera();//关闭相机
-
+        //public override bool StopLive()
+        //{
+        //    if (!bl_CamOpen) return false;
+        //    return myCamera.SetEnumValue("TriggerMode", 1) == MyCamera.MV_OK;
         //}
 
     }

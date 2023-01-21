@@ -5,7 +5,7 @@ VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsApp1", "WinFormsApp1\WinFormsApp1.csproj", "{493A6FC8-BB24-484F-8174-1799B8439617}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectHKCamera", "ConnectHKCamera\ConnectHKCamera.csproj", "{21506651-0A4D-44BF-ADC5-20DCD5694578}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectCamera", "ConnectCamera\ConnectCamera.csproj", "{045B33AF-4264-400B-93C0-9063AF38D477}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{493A6FC8-BB24-484F-8174-1799B8439617}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{493A6FC8-BB24-484F-8174-1799B8439617}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{493A6FC8-BB24-484F-8174-1799B8439617}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21506651-0A4D-44BF-ADC5-20DCD5694578}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21506651-0A4D-44BF-ADC5-20DCD5694578}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21506651-0A4D-44BF-ADC5-20DCD5694578}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21506651-0A4D-44BF-ADC5-20DCD5694578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{045B33AF-4264-400B-93C0-9063AF38D477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{045B33AF-4264-400B-93C0-9063AF38D477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{045B33AF-4264-400B-93C0-9063AF38D477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{045B33AF-4264-400B-93C0-9063AF38D477}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
