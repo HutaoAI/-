@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace ConnectCamera.HKCamera
     public class HKCamera : ICamera
     {
         readonly Dictionary<string, Hikvision> CamereDic = new Dictionary<string, Hikvision>();
+
+        public int Count => CamereDic.Count;
 
         public HKCamera(params string[] CamName)
         {
@@ -36,7 +39,6 @@ namespace ConnectCamera.HKCamera
                 }
             }
         }
-
 
         public void ConnectCameras()
         {
@@ -91,7 +93,6 @@ namespace ConnectCamera.HKCamera
             return imgBytes;
         }
 
-
         public Bitmap? GetImage(string CamID, int exposure)
         {
             if (!CamereDic[CamID].bl_CamOpen)
@@ -109,6 +110,26 @@ namespace ConnectCamera.HKCamera
                 throw new Exception("没有找到相机ID");
 
             return CamereDic[ID].bl_CamOpen;
+        }
+
+        public void Add(string ID)
+        {
+            if (CamereDic.ContainsKey(ID))
+                return;
+            CamereDic.Add(ID,new Hikvision());
+        }
+
+        public void Clear()
+        {
+            CamereDic.Clear();
+        }
+
+        public bool Remove(string ID)
+        {
+            if(CamereDic.ContainsKey(ID))
+                return CamereDic.Remove(ID);
+            else
+                return false;
         }
     }
 }

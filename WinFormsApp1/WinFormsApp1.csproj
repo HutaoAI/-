@@ -8,4 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectCamera\ConnectCamera.csproj" />
+  </ItemGroup>
+
 </Project>
